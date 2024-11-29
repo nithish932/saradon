@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Our Love Story - Happy Birthday</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #1a1a2e;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Arial', sans-serif;
+            perspective: 1500px;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            width: 100%;
+            padding: 40px 20px;
+        }
+
+        .book {
+            position: relative;
+            width: min(800px, 90vw);
+            height: min(600px, 80vh);
+            transform-style: preserve-3d;
+            perspective: 2000px;
+            margin: 0 auto;
+        }
+
+        .page {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            transform-origin: left center;
+            transition: transform 1.5s cubic-bezier(0.645, 0.045, 0.355, 1);
+            transform-style: preserve-3d;
+            cursor: pointer;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+            overflow: hidden;
+            backface-visibility: visible;
+            left: 0;
+            right: 0;
+            margin: auto;
+        }
+
+        .page-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .page::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg,
+                rgba(255, 111, 97, 0.3) 0%,
+                rgba(255, 143, 179, 0.3) 50%,
+                rgba(88, 62, 110, 0.5) 100%);
+            border-radius: 20px;
+        }
+
+        .page::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at center,
+                rgba(255, 255, 255, 0.1) 0%,
+                transparent 70%);
+            animation: rays 15s infinite linear;
+            pointer-events: none;
+        }
+
+        @keyframes rays {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .page.flipped {
+            transform: rotateY(-180deg);
+        }
+
+        .page-content {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+            color: white;
+            text-align: center;
+            z-index: 2;
+        }
+
+        /* Update z-index handling */
+        .page[data-index="1"] { z-index: 5; }
+        .page[data-index="2"] { z-index: 4; }
+        .page[data-index="3"] { z-index: 3; }
+        .page[data-index="4"] { z-index: 2; }
+        .page[data-index="5"] { z-index: 1; }
+
+        .page.flipped[data-index="1"] { z-index: 1; }
+        .page.flipped[data-index="2"] { z-index: 2; }
+        .page.flipped[data-index="3"] { z-index: 3; }
+        .page.flipped[data-index="4"] { z-index: 4; }
+        .page.flipped[data-index="5"] { z-index: 5; }
+
+        h2 {
+            font-size: clamp(1.5rem, 3vw, 2.5rem);
+            margin-bottom: 1.5rem;
+            text-shadow: 0 0 10px rgba(255,255,255,0.5),
+                         0 0 20px rgba(255,255,255,0.3),
+                         0 0 30px rgba(255,255,255,0.2);
+            background: rgba(0,0,0,0.2);
+            padding: 15px 25px;
+            border-radius: 15px;
+            backdrop-filter: blur(5px);
+            letter-spacing: 2px;
+        }
+
+        p {
+            font-size: clamp(1rem, 2vw, 1.2rem);
+            line-height: 1.8;
+            max-width: 90%;
+            text-shadow: 0 0 10px rgba(255,255,255,0.3);
+            background: rgba(0,0,0,0.2);
+            padding: 20px;
+            border-radius: 15px;
+            backdrop-filter: blur(5px);
+            letter-spacing: 1px;
+        }
+
+        .navigation {
+            position: fixed;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 20px;
+            z-index: 1000;
+        }
+
+        .nav-button {
+            padding: 12px 24px;
+            border: none;
+            background: rgba(255,255,255,0.1);
+            color: white;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            text-shadow: 0 0 10px rgba(255,255,255,0.5);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2),
+                       0 0 20px rgba(255,255,255,0.1);
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .nav-button:hover {
+            background: rgba(255,255,255,0.2);
+            transform: scale(1.05);
+            box-shadow: 0 0 30px rgba(255,255,255,0.2);
+        }
+
+        .page-number {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            font-size: 1.2rem;
+            color: white;
+            background: rgba(0,0,0,0.2);
+            padding: 8px 20px;
+            border-radius: 15px;
+            backdrop-filter: blur(5px);
+            text-shadow: 0 0 10px rgba(255,255,255,0.3);
+        }
+
+        /* Media queries for better responsiveness */
+        @media (min-width: 1024px) {
+            .book {
+                width: 800px;
+                height: 600px;
+            }
+        }
+
+        @media (max-width: 1023px) {
+            .book {
+                width: 90vw;
+                height: 70vh;
+            }
+        }
+
+        .floating-heart {
+            position: fixed;
+            pointer-events: none;
+            z-index: 1000;
+            font-size: 20px;
+            animation: floatHeart 6s ease-in-out infinite;
+            opacity: 0;
+            text-shadow: 0 0 10px rgba(255, 182, 193, 0.5);
+        }
+
+        @keyframes floatHeart {
+            0% {
+                transform: translate(0, 0) rotate(0deg) scale(1);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.8;
+            }
+            90% {
+                opacity: 0.8;
+            }
+            100% {
+                transform: translate(var(--moveX), -100vh) rotate(var(--rotate)) scale(var(--scale));
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="book" id="book">
+        <div class="page" data-index="1">
+            <div class="page-image" style="background-image: url('https://res.cloudinary.com/dxgyrgr2p/image/upload/v1732875785/kysyinmfv7e7ej578uhf.jpg')"></div>
+            <div class="page-content">
+                <h2>Happy Birthday My Universe! 💫</h2>
+                <p>Like shadows dance in twilight, our love creates the most beautiful silhouettes of life...</p>
+                <div class="page-number">1</div>
+            </div>
+        </div>
+
+        <div class="page" data-index="2">
+            <div class="page-image" style="background-image: url('https://res.cloudinary.com/dxgyrgr2p/image/upload/f_auto,q_auto/uaszmrkjt5l5kezfl0yx')"></div>
+            <div class="page-content">
+                <h2>Our Silhouette Story 🌅</h2>
+                <p>In the soft glow of sunset, our shadows merged into one, telling stories of endless love and devotion.</p>
+                <div class="page-number">2</div>
+            </div>
+        </div>
+
+        <div class="page" data-index="3">
+            <div class="page-image" style="background-image: url('https://res.cloudinary.com/dxgyrgr2p/image/upload/v1732876979/zplq19wrlxztjzaucedz.jpg')"></div>
+            <div class="page-content">
+                <h2>Dancing in Twilight ✨</h2>
+                <p>Like two shadows intertwined, we move through life in perfect harmony, creating moments that light up the darkness.</p>
+                <div class="page-number">3</div>
+            </div>
+        </div>
+
+        <div class="page" data-index="4">
+            <div class="page-image" style="background-image: url('https://res.cloudinary.com/dxgyrgr2p/image/upload/v1732877077/zjknhk2qajsvinmbqyyj.jpg')"></div>
+            <div class="page-content">
+                <h2>Love's Silhouette 🌌</h2>
+                <p>Against the canvas of life, our love casts the most beautiful shadows, painting stories of endless romance.</p>
+                <div class="page-number">4</div>
+            </div>
+        </div>
+
+        <div class="page" data-index="5">
+            <div class="page-image" style="background-image: url('https://res.cloudinary.com/dxgyrgr2p/image/upload/f_auto,q_auto/g2kktgfbcivccycxau7i')"></div>
+            <div class="page-content">
+                <h2>Forever Us 💫</h2>
+                <p>As day turns to dusk and dusk to dawn, my love for you remains constant, casting a perfect silhouette of forever.</p>
+                <div class="page-number">5</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="navigation">
+        <button class="nav-button" id="prevBtn">Previous Page</button>
+        <button class="nav-button" id="nextBtn">Next Page</button>
+    </div>
+
+    <script>
+        let currentPage = 1;
+        const pages = document.querySelectorAll('.page');
+        const totalPages = pages.length;
+
+        function updatePages() {
+            pages.forEach(page => {
+                const pageIndex = parseInt(page.dataset.index);
+                if (pageIndex < currentPage) {
+                    page.classList.add('flipped');
+                } else {
+                    page.classList.remove('flipped');
+                }
+            });
+        }
+
+        document.getElementById('prevBtn').addEventListener('click', () => {
+            if (currentPage > 1) {
+                currentPage--;
+                updatePages();
+            }
+        });
+
+        document.getElementById('nextBtn').addEventListener('click', () => {
+            if (currentPage < totalPages) {
+                currentPage++;
+                updatePages();
+            }
+        });
+
+        pages.forEach(page => {
+            page.addEventListener('click', () => {
+                const pageIndex = parseInt(page.dataset.index);
+                if (pageIndex === currentPage) {
+                    currentPage++;
+                    updatePages();
+                }
+            });
+        });
+
+        function createHeart() {
+            const heart = document.createElement('div');
+            heart.className = 'floating-heart';
+            const heartTypes = ['💖', '💗', '💓', '💕', '💝', '💘', '💟', '❤️', '🫶'];
+            heart.textContent = heartTypes[Math.floor(Math.random() * heartTypes.length)];
+            
+            const startX = Math.random() * window.innerWidth;
+            heart.style.left = `${startX}px`;
+            heart.style.bottom = '0';
+
+            const moveX = (Math.random() - 0.5) * 200;
+            const rotate = (Math.random() - 0.5) * 360;
+            const scale = 0.5 + Math.random() * 1.5;
+            const duration = 4 + Math.random() * 4;
+
+            heart.style.setProperty('--moveX', `${moveX}px`);
+            heart.style.setProperty('--rotate', `${rotate}deg`);
+            heart.style.setProperty('--scale', scale);
+            heart.style.animationDuration = `${duration}s`;
+
+            document.body.appendChild(heart);
+
+            setTimeout(() => {
+                heart.remove();
+            }, duration * 1000);
+        }
+
+        setInterval(createHeart, 300);
+
+        for(let i = 0; i < 10; i++) {
+            setTimeout(createHeart, i * 200);
+        }
+    </script>
+</body>
+</html>
